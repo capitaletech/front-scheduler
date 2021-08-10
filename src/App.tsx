@@ -1,30 +1,29 @@
 import React from 'react';
 import './App.css';
 import {
-    ScheduleComponent,
-    Inject,
-    Day,
-    Week,
-    WorkWeek,
-    Month,
     Agenda,
-    MonthAgenda,
+    Day,
     DragAndDrop,
-    Resize,
-    EventSettingsModel,
     DragEventArgs,
-    ResizeEventArgs,
-    ScrollOptions,
-    NavigateOptions,
-    ViewsDirective,
-    ViewDirective,
-    PopupOpenEventArgs,
     EventRenderedArgs,
-    RenderCellEventArgs
+    Inject,
+    Month,
+    MonthAgenda,
+    NavigateOptions,
+    PopupOpenEventArgs,
+    RenderCellEventArgs,
+    Resize,
+    ResizeEventArgs,
+    ScheduleComponent,
+    ScrollOptions,
+    ViewDirective,
+    ViewsDirective,
+    Week,
+    WorkWeek
 } from "@syncfusion/ej2-react-schedule";
-import {DataManager, WebApiAdaptor, UrlAdaptor} from "@syncfusion/ej2-data";
+import {DataManager, UrlAdaptor} from "@syncfusion/ej2-data";
 import {DateTimePickerComponent} from "@syncfusion/ej2-react-calendars";
-import {extend, L10n} from '@syncfusion/ej2-base';
+import {L10n} from '@syncfusion/ej2-base';
 
 L10n.load({
     'en-US': {
@@ -38,44 +37,13 @@ L10n.load({
 });
 
 class App extends React.Component {
-    private localData: EventSettingsModel = {
-        dataSource: [
-            {
-                id: 1,
-                Subject: "Test 1",
-                StartTime: new Date(2021, 7, 6, 10, 30),
-                EndTime: new Date(2021, 7, 6, 12, 30)
-            },
-            {
-                id: 2,
-                Subject: "Test 2",
-                StartTime: new Date(2021, 7, 6, 14, 30),
-                EndTime: new Date(2021, 7, 6, 16, 30)
-            }
-        ]
-    }
-
-    /*  private dataManger = new DataManager({
-          url: "http://localhost:54738/Home/LoadData", // Here need to mention the web api sample running path
-          crudUrl: "http://localhost:54738/Home/UpdateData",
-          crossDomain: true,
-          adaptor: new UrlAdaptor()
-      });*/
-
     private dataManger = new DataManager({
-        url: "http://localhost:8081/api/meetings",
+        url: "http://localhost:8081/api/meetings/data",
+        crudUrl: "http://localhost:8081/api/meetings/batch",
         crossDomain: true,
-        adaptor: new WebApiAdaptor()
+        adaptor: new UrlAdaptor()
     });
 
-    /*  private dataManger = new DataManager({
-          url: "https://ej2services.syncfusion.com/production/web-services/api/Schedule",
-          crossDomain: true,
-          adaptor: new WebApiAdaptor()
-      });*/
-
-
-    // private data = new DataManager({ url: 'http://localhost:5000/GetData', crudUrl: 'http://localhost:5000/BatchData', adaptor: new UrlAdaptor, crossDomain: true });
 
     private onDragStart(args: DragEventArgs): void {
         //Exclude
@@ -125,24 +93,31 @@ class App extends React.Component {
      */
     private onEventRendered(args: EventRenderedArgs) {
         console.log("onEventRendered")
+        console.log(args.data);
         console.log(args.data.EndTime + "  <<<<   " + new Date())
         if (args.data.EndTime < new Date()) {
             args.element.classList.add('e-past-app');
         }
-        args.element.addEventListener('click', this.customClick);
+        args.element.addEventListener('click', (event) => {
+                this.customClick(event, args.data)
+            }
+        );
     }
 
     /**
      * Handles the double click on scheduled meetings
+     * Opens a new window to the scheduled zoom meeting
      * @param args
      */
-    private customClick(args: any) {
+    private customClick(args: any, data: Record<string, any>) {
         console.log("customClick");
-        console.log(args.data);
+        console.log(data);
         // if double click
         if (args.detail === 2) {
-            const url = 'https://google.com/';
-            window.open(url, '_blank');
+            const url = data.MeetingUrl;
+            if (url) {
+                window.open(url, '_blank');
+            }
         }
     }
 
