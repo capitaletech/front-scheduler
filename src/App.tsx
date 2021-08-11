@@ -37,13 +37,14 @@ L10n.load({
 });
 
 class App extends React.Component {
+    private scheduleObj: any;
+
     private dataManger = new DataManager({
         url: "http://localhost:8081/api/meetings/data",
         crudUrl: "http://localhost:8081/api/meetings/batch",
         crossDomain: true,
         adaptor: new UrlAdaptor()
     });
-
 
     private onDragStart(args: DragEventArgs): void {
         //Exclude
@@ -81,8 +82,6 @@ class App extends React.Component {
 
     private onEventCheck(args: any): boolean {
         let eventObj: any = args.data instanceof Array ? args.data[0] : args.data;
-        console.log("onEventCheck")
-        console.log(eventObj.StartTime)
         return (eventObj.StartTime < new Date());
     }
 
@@ -92,9 +91,6 @@ class App extends React.Component {
      * @private
      */
     private onEventRendered(args: EventRenderedArgs) {
-        console.log("onEventRendered")
-        console.log(args.data);
-        console.log(args.data.EndTime + "  <<<<   " + new Date())
         if (args.data.EndTime < new Date()) {
             args.element.classList.add('e-past-app');
         }
@@ -110,8 +106,6 @@ class App extends React.Component {
      * @param args
      */
     private customClick(args: any, data: Record<string, any>) {
-        console.log("customClick");
-        console.log(data);
         // if double click
         if (args.detail === 2) {
             const url = data.MeetingUrl;
@@ -125,6 +119,19 @@ class App extends React.Component {
         if (args.date && args.date < new Date()) {
             args.element.setAttribute('aria-readonly', 'true');
             args.element.classList.add('e-read-only-cells');
+        }
+    }
+
+    /**
+     * Handles the server-side exceptions
+     * @param args
+     * @private
+     */
+    private onActionFailure(args: any) {
+        if(Array.isArray(args.error)) {
+            const error = args.error[0].error?.response;
+            console.error(error);
+            window.alert(error);
         }
     }
 
@@ -172,7 +179,9 @@ class App extends React.Component {
                                   popupOpen={this.onPopupOpen.bind(this)}
                                   editorTemplate={this.editorTemplate.bind(this)}
                                   eventRendered={this.onEventRendered.bind(this)}
-                                  renderCell={this.onRenderCell.bind(this)}>
+                                  renderCell={this.onRenderCell.bind(this)}
+                                  actionFailure={this.onActionFailure.bind(this)}
+                                  ref={schedule => this.scheduleObj = schedule}>
             <ViewsDirective>
                 <ViewDirective option="Day"/>
                 <ViewDirective option="Week"/>
