@@ -1,6 +1,6 @@
 ## INSTRUCTIONS
 Execute `yarn start` to the start the app in development mode.\
-The scheduler will be accessible at http://localhost:3000.\
+The scheduler will be accessible at http://localhost:3000. \
 To book a meeting, click on the corresponding cell to open the quick info popup. Add the subject of the meeting and validate.\
 To manually enter the time and date of a meeting, double click on any free cell to open the editor popup.\
 After creating a meeting, the backend will generate the corresponding Zoom meeting and send it back to the scheduler.\
