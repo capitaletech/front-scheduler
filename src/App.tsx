@@ -38,10 +38,11 @@ L10n.load({
 
 class App extends React.Component {
     private scheduleObj: any;
+    private backendUrl = "http://localhost:8081/api"
 
     private dataManger = new DataManager({
-        url: "http://localhost:8081/api/meetings/data",
-        crudUrl: "http://localhost:8081/api/meetings/batch",
+        url: `${this.backendUrl}/meetings/data`,
+        crudUrl: `${this.backendUrl}/meetings/batch`,
         crossDomain: true,
         adaptor: new UrlAdaptor()
     });
@@ -128,7 +129,7 @@ class App extends React.Component {
      * @private
      */
     private onActionFailure(args: any) {
-        if(Array.isArray(args.error)) {
+        if (Array.isArray(args.error)) {
             const error = args.error[0].error?.response;
             console.error(error);
             window.alert(error);
