@@ -38,7 +38,7 @@ L10n.load({
 
 class App extends React.Component {
     private scheduleObj: any;
-    private backendUrl = "http://localhost:8081/api"
+    private backendUrl = "http://127.0.0.1:8081/api"
 
     private dataManger = new DataManager({
         url: `${this.backendUrl}/meetings/data`,
